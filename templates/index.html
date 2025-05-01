@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Script Guardian</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #020c1b;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .top-buttons {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+        }
+
+        .top-buttons button {
+            background: black;
+            color: white;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 14px 30px;
+            width: 200px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            text-align: center;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
+        }
+
+        .top-buttons button:hover {
+            background: #0a0a0a;
+            box-shadow: 0 0 20px cyan;
+        }
+
+        footer {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            font-family: 'Fredoka', sans-serif;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 10px 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+            width: max-content;
+        }
+
+        .footer-top {
+            font-size: 16px;
+            font-weight: 600;
+            color: #00ffea;
+            margin-bottom: 5px;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .footer-bottom {
+            font-size: 14px;
+            font-weight: 400;
+            color: #cccccc;
+        }
+
+        .footer-powered {
+            font-size: 13px;
+            color: #888;
+            margin-top: 3px;
+        }
+
+        .stars, .meteors, .shooting-stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: moveStar linear infinite;
+        }
+
+        @keyframes moveStar {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(100vh); opacity: 0; }
+        }
+
+        .shooting-star {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: white;
+            box-shadow: 0 0 10px white;
+            border-radius: 50%;
+            animation: shootingStar linear 2s;
+        }
+
+        @keyframes shootingStar {
+            0% { transform: translateX(100vw) translateY(-50px); opacity: 1; }
+            100% { transform: translateX(-10vw) translateY(50vh); opacity: 0; }
+        }
+
+        .meteor {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background: orange;
+            box-shadow: 0 0 15px orange;
+            border-radius: 50%;
+            animation: meteorFall linear 3s;
+        }
+
+        @keyframes meteorFall {
+            0% { transform: translateX(100vw) translateY(-10vh); opacity: 1; }
+            100% { transform: translateX(-10vw) translateY(100vh); opacity: 0; }
+        }
+
+        .container {
+            background: rgba(0, 0, 0, 0.85);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            width: 80%;
+            max-width: 600px; /* Increased from 500px */
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+            opacity: 0;
+            transform: scale(0.8);
+            transition: opacity 1s ease, transform 1s ease;
+            position: relative;
+            z-index: 10;
+        }
+
+        .show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        h1 {
+            font-size: 26px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px cyan;
+        }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 10px;
+            background-color: #111;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            resize: none;
+            outline: none;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            background: linear-gradient(45deg, #00d2ff, #3a7bd5);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: linear-gradient(45deg, #3a7bd5, #00d2ff);
+            box-shadow: 0 0 15px cyan;
+        }
+
+        #customNameContainer {
+            display: none;
+            margin-top: 10px;
+        }
+
+        #customNameBox {
+            width: 100%;
+            padding: 10px;
+            background-color: #222;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            outline: none;
+            font-size: 16px;
+            text-align: center;
+        }
+        
+        .file-upload {
+            position: relative;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .file-upload input[type=file] {
+            position: absolute;
+            top: 0;
+            right: 0;
+            min-width: 100%;
+            min-height: 100%;
+            font-size: 100px;
+            text-align: right;
+            filter: alpha(opacity=0);
+            opacity: 0;
+            outline: none;
+            cursor: pointer;
+            display: block;
+        }
+        
+        .file-notification {
+            margin-top: 5px;
+            color: #00ffea;
+            font-size: 14px;
+            font-weight: bold;
+            display: none;
+        }
+
+        #output {
+            margin-top: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #00ffea;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            background: rgba(0, 0, 0, 0.85);
+            padding: 10px;
+            border-radius: 8px;
+            display: none;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+    </style>
+</head>
+<body>
+
+<div id="captchaContainer" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.85); z-index: 20;">
+  <div class="container show" style="max-width: 400px; width: 90%; box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);">
+    <h1 style="margin-bottom: 20px;">Verifying You’re Human...</h1>
+    <div class="cf-turnstile" data-sitekey="0x4AAAAAABWfDaHaYbkZVwPK" data-callback="onCaptchaSuccess"></div>
+  </div>
+</div>
+
+    <footer>
+        <p class="footer-top" id="changingText">The safest way to secure your scripts</p>
+        <p class="footer-bottom">Made by: Shinzou | Script Guardian created on March 23, 2025</p>
+        <p class="footer-powered">Powered by Render
+    </footer>
+
+  <div class="stars"></div>
+    <div class="meteors"></div>
+    <div class="shooting-stars"></div>
+
+    <div class="top-buttons">
+        <button onclick="window.location.href='discord.gg/jdark'">Discord</button>
+        <button>Obfuscation History [Soon]</button>
+    </div>
+
+<div class="container" id="uiBox" style="display: none;">
+        <h1>Script Guardian</h1>
+        <textarea id="scriptBox" placeholder="Enter Your Roblox Script Here!"></textarea>
+        
+        <!-- File Upload Button -->
+        <div class="file-upload">
+            <button id="uploadButton">Upload Script File</button>
+            <input type="file" id="scriptFile" accept=".txt,.lua,.luau" onchange="handleFileUpload(event)">
+            <p id="fileNotification" class="file-notification">✅ File successfully selected!</p>
+        </div>
+        
+        <button onclick="toggleCustomName()">Custom Name</button>
+        <div id="customNameContainer">
+            <input type="text" id="customNameBox" placeholder="Enter Custom Name Here!">
+        </div>
+        <button onclick="generateLink()">Generate</button>
+        <p id="output"></p>
+    </div>
+
+    <script>
+        setTimeout(() => {
+            document.getElementById("uiBox")?.classList.add("show");
+        }, 3000);
+
+        const texts = [
+        "✨ The Ultimate 🔒 Protection for Your Scripts! ✨",
+        "🔧 Seamless Integration – Simply upload your script, click once, and get a secure, shareable link!",
+        "🔒 Unmatched Security – Your scripts are safely stored.",
+        "🚀 Lightning-Fast Performance – Our multi-server architecture guarantees flawless execution with a 0% error rate!"
+    ];
+
+        let index = 0;
+        function changeText() {
+            let textElement = document.getElementById("changingText");
+
+            textElement.style.opacity = "0";  // Fade out
+            setTimeout(() => {
+                textElement.textContent = texts[index];
+                textElement.style.opacity = "1";  // Fade in
+                index = (index + 1) % texts.length;
+            }, 1000);
+        }
+
+        setInterval(changeText, 10000);
+
+        function toggleCustomName() {
+            let container = document.getElementById("customNameContainer");
+            container.style.display = container.style.display === "block" ? "none" : "block";
+        }
+        
+        // Function to handle file upload
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById("scriptBox").value = e.target.result;
+                    
+                    // Show success notification
+                    const notification = document.getElementById("fileNotification");
+                    notification.style.display = "block";
+                    
+                    // Hide notification after 3 seconds
+                    setTimeout(() => {
+                        notification.style.display = "none";
+                    }, 3000);
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        let isGenerating = false;
+        let countdownTime = localStorage.getItem("countdownTime") 
+            ? parseInt(localStorage.getItem("countdownTime")) 
+            : 0;
+
+        document.addEventListener("DOMContentLoaded", () => {
+            let savedLink = localStorage.getItem("generatedLink");
+            let outputBox = document.getElementById("output");
+            let generateButton = document.querySelector('button[onclick="generateLink()"]');
+
+            if (savedLink) {
+                outputBox.innerHTML = `Link generated:<br>loadstring(game:HttpGet("${savedLink}"))()`;
+                outputBox.style.display = "block";
+            }
+
+            // Only check for countdown if there's an active ban (from profanity)
+            if (countdownTime > 0) {
+                startCountdown(generateButton);
+            }
+        });
+
+        async function checkProfanity(text) {
+            try {
+                let response = await fetch(`https://www.purgomalum.com/service/containsprofanity?text=${encodeURIComponent(text)}`);
+                let isProfane = await response.text();
+                return isProfane === "true";
+            } catch (error) {
+                console.error("Error checking profanity:", error);
+                return false;
+            }
+        }
+
+        async function generateLink() {
+            if (isGenerating) return;
+
+            let scriptContent = document.getElementById("scriptBox").value.trim();
+            let customName = document.getElementById("customNameBox").value.trim();
+            let outputBox = document.getElementById("output");
+            let generateButton = document.querySelector('button[onclick="generateLink()"]');
+
+            if (!scriptContent) {
+                alert("Please enter a script.");
+                return;
+            }
+
+            let isProfane = await checkProfanity(customName);
+            if (isProfane) {
+                alert("Inappropriate name detected! You are banned from generating for 1 day.");
+                countdownTime = 86400;
+                localStorage.setItem("countdownTime", countdownTime);
+                startCountdown(generateButton);
+                return;
+            }
+
+            isGenerating = true;
+            generateButton.disabled = true;
+            
+            // Start the loading animation
+            let loadingDots = 1;
+            const loadingInterval = setInterval(() => {
+                loadingDots = (loadingDots % 3) + 1;
+                let dots = '.'.repeat(loadingDots);
+                generateButton.textContent = `Generating${dots}`;
+            }, 500);
+            
+            fetch('/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ script: scriptContent, name: customName })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Clear the loading animation
+                clearInterval(loadingInterval);
+                
+                if (data.link) {
+                    outputBox.innerHTML = `Link generated:<br>loadstring(game:HttpGet("${data.link}"))()`;
+                    outputBox.style.display = "block";
+                    localStorage.setItem("generatedLink", data.link);
+                    
+                    // Reset button immediately instead of starting countdown
+                    resetButton(generateButton);
+                } else {
+                    alert("Error generating link.");
+                    resetButton(generateButton);
+                }
+            })
+            .catch(error => {
+                // Clear the loading animation
+                clearInterval(loadingInterval);
+                
+                console.error('Error:', error);
+                resetButton(generateButton);
+            });
+        }
+
+        function startCountdown(button) {
+            let countdownInterval = setInterval(() => {
+                countdownTime--;
+                localStorage.setItem("countdownTime", countdownTime);
+                button.textContent = `Wait ${countdownTime}s To Generate Again`;
+                button.disabled = true;
+
+                if (countdownTime <= 0) {
+                    clearInterval(countdownInterval);
+                    resetButton(button);
+                }
+            }, 1000);
+        }
+
+        function resetButton(button) {
+            isGenerating = false;
+            localStorage.removeItem("countdownTime");
+            button.disabled = false;
+            button.textContent = "Generate";
+        }
+
+        function createStars(count) {
+            let starsContainer = document.querySelector(".stars");
+            for (let i = 0; i < count; i++) {
+                let star = document.createElement("div");
+                star.classList.add("star");
+                let size = Math.random() * 3 + 1;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.left = `${Math.random() * 100}vw`;
+                star.style.top = `${Math.random() * 100}vh`;
+                star.style.animationDuration = `${Math.random() * 5 + 5}s`;
+                star.style.animationDelay = `${Math.random() * 5}s`;
+                starsContainer.appendChild(star);
+            }
+        }
+
+        function createMeteor() {
+            let meteor = document.createElement("div");
+            meteor.classList.add("meteor");
+            meteor.style.left = `${Math.random() * 100}vw`;
+            document.querySelector(".meteors").appendChild(meteor);
+            setTimeout(() => meteor.remove(), 3000);
+        }
+        setInterval(createMeteor, 10000);
+
+        function createShootingStar() {
+            let star = document.createElement("div");
+            star.classList.add("shooting-star");
+            star.style.right = "0";
+            star.style.top = `${Math.random() * 100}vh`;
+            document.querySelector(".shooting-stars").appendChild(star);
+            setTimeout(() => star.remove(), 2000);
+        }
+        setInterval(createShootingStar, 7000);
+
+        createStars(150);
+        
+        function onCaptchaSuccess() {
+    document.getElementById("captchaContainer").style.display = "none";
+    const uiBox = document.getElementById("uiBox");
+    uiBox.style.display = "block";
+    setTimeout(() => uiBox.classList.add("show"), 100);
+}
+    </script>
+</body>
+</html>
