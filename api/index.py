@@ -8,7 +8,7 @@ import json
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "0x4AAAAAABYpbj6-6zZXa_K-qclTpaXWyyM")  # Add your own secure key here
 
-SCRIPTS_DIR = "/tmp/scripts"
+SCRIPTS_DIR = "scripts"
 
 # Create scripts folder if it doesn't exist
 os.makedirs(SCRIPTS_DIR, exist_ok=True)
