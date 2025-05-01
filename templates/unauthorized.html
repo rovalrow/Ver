@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta content="width=device-width,initial-scale=1" name="viewport">
+  <title>Unauthorized</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Roboto, Arial, sans-serif;
+      background-color: #1a1e30;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .container {
+      text-align: center;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0);
+      border-radius: 10px;
+      box-shadow: 0 8px 15px transparent;
+    }
+    .brand {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .brand-text {
+      font-size: 18px;
+      font-weight: 600;
+      color: #fff;
+      margin-top: 5px;
+    }
+    h1 {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+    p {
+      font-size: 16px;
+      color: #d1d1d1;
+    }
+    .discord-button { 
+      margin-top: 20px;
+      padding: 12px 24px; 
+      font-size: 20px; 
+      background-color: #000000; 
+      color: white; 
+      border: none; 
+      border-radius: 12px; 
+      cursor: pointer; 
+      font-family: 'Fredoka', sans-serif;
+      transition: 0.3s;
+    }
+    .discord-button:hover { 
+      background-color: #222222; 
+    }
+    .made-by {
+      margin-top: 15px;
+      color: red;
+      font-size: 18px;
+      font-family: 'Fredoka', sans-serif;
+    }
+  </style>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+</head>
+<body>
+
+<div id="captchaContainer" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.85); z-index: 20;">
+  <div class="container show" style="max-width: 400px; width: 90%; box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);">
+    <h1 style="margin-bottom: 20px;">Verifying You’re Human...</h1>
+    <div class="cf-turnstile"
+         data-sitekey="0x4AAAAAABWfDaHaYbkZVwPK"
+         data-callback="onCaptchaSuccess"
+         data-theme="light">
+    </div>
+  </div>
+</div>
+
+<div class="container" id="uiBox" style="display: none;">
+  <div class="brand">
+    <div class="brand-text">⛔ Access Denied ⛔</div>
+  </div>
+  <h1>You do not have permission to view these files.</h1>
+  <p>Please close this page and continue to a valid location.</p>
+  <button class="discord-button" onclick="window.location.href='https://discord.gg/jdark'">Discord</button>
+  <div class="made-by">Made By: Shinzou</div>
+</div>
+
+<script>
+function onCaptchaSuccess() {
+  document.getElementById("captchaContainer").style.display = "none";
+  const uiBox = document.getElementById("uiBox");
+  uiBox.style.display = "block";
+  setTimeout(() => uiBox.classList.add("show"), 100);
+}
+</script>
+
+</body>
+</html>
